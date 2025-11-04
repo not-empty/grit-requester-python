@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grit_requester"
+version = "1.0.0"
+description = "Grit Requester"
+authors = [{ name = "Rainã Pepe", email = "raina.pepe@outlook.com" }]
+dependencies = ["requests"]
