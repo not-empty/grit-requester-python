@@ -9,5 +9,5 @@ description = "Grit requester client for Python"
 authors = [{ name = "Rainã Pepe", email = "raina.pepe@outlook.com" }]
 dependencies = ["requests"]
 
-[tool.setuptools]
-packages = ["grit_requester"]
+[tool.setuptools.packages.find]
+where = ["."]
