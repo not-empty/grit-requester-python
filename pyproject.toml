@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "grit_requester"
 version = "1.0.0"
-description = "Grit Requester"
+description = "Grit requester client for Python"
 authors = [{ name = "Rainã Pepe", email = "raina.pepe@outlook.com" }]
 dependencies = ["requests"]
+
+[tool.setuptools]
+packages = ["grit_requester"]
