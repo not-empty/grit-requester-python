@@ -2,7 +2,7 @@
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-**grit-requester-js** is a javascript library to abstract requests to microservices built using Grit.
+**grit-requester-python** is a python library to abstract requests to microservices built using Grit.
 
 Features:
 
@@ -17,7 +17,7 @@ Features:
 ## ✨ Installation
 
 ```bash
-npm install "https://github.com/not-empty/grit-requester-js/releases/download/v1.0.2/grit-requester-js-1.0.2.tgz"
+pip install grit_requester
 ```
 
 ---
@@ -25,103 +25,71 @@ npm install "https://github.com/not-empty/grit-requester-js/releases/download/v1
 ## 🚀 Usage Example
 
 ### Configure and do a request
-```ts
-import { GritRequester } from 'grit-requester-js';
+```python
+from grit_requester import GritService, GritConfig
 
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-}
+# configure grit requester
+config = GritConfig(
+  base_url=os.getenv("SERVICE_BASE_URL"),
+  auth_url=os.getenv("SERVICE_AUTH_URL"),
+  token=os.getenv("SERVICE_TOKEN"),
+  secret=os.getenv("SERVICE_SECRET"),
+  context=os.getenv("SERVICE_CONTEXT"),
+)
 
-// configure grit requester
-const ms = new GritRequester({
-  baseUrl: 'http://localhost:8001',
-  token: process.env.SERVICE_TOKEN || '',
-  secret: process.env.SERVICE_SECRET || '',
-  context: process.env.SERVICE_CONTEXT || '',
-});
+ms = GritService(config)
 
-// doing a request
-const result = await ms.request<{ id: string }>({
-  path: '/user/add',
-  method: 'POST',
-  body: {
-    name: 'example',
-    email: 'example@example.com'
-  }
-});
-
+# doing a request
+resp = ms.request(
+  "GET",
+  "/user/list",
+)
 ```
 
 ### Make crud requests from a domain
 
 Here you can call a domain passing the type and path to access the following base routers:
 
-| Path             | Description                                |
-| -----------------| -------------------------------------------|
-| add              | Create a new record                        |
-| bulk             | Fetch specific records by IDs              |
-| bulkAdd          | Create up to 25 records in the same request|
-| deadDetail       | Get a deleted record by ID                 |
-| deadList         | List deleted records (paginated)           |
-| delete           | Soft-delete a record by ID                 |
-| detail           | Get an active record by ID                 |
-| edit             | Update specific fields                     |
-| list             | List active records (paginated)            |
-| listOne          | List one record based on params            |
-| selectRaw        | Execute a predefined raw SQL query safely  |
+| Path              | Description                                |
+| ----------------- | -------------------------------------------|
+| add               | Create a new record                        |
+| bulk              | Fetch specific records by IDs              |
+| bulk_add          | Create up to 25 records in the same request|
+| dead_detail       | Get a deleted record by ID                 |
+| dead_list         | List deleted records (paginated)           |
+| delete            | Soft-delete a record by ID                 |
+| detail            | Get an active record by ID                 |
+| edit              | Update specific fields                     |
+| list              | List active records (paginated)            |
+| list_one          | List one record based on params            |
+| select_raw        | Execute a predefined raw SQL query safely  |
 
-```ts
-import { GritRequester } from 'grit-requester-js';
+```python
+from grit_requester import GritService, GritConfig
 
-interface IUser {
-  id: string;
-  name: string;
-  email: string;
-}
+# configure grit requester
+config = GritConfig(
+  base_url=os.getenv("SERVICE_BASE_URL"),
+  auth_url=os.getenv("SERVICE_AUTH_URL"),
+  token=os.getenv("SERVICE_TOKEN"),
+  secret=os.getenv("SERVICE_SECRET"),
+  context=os.getenv("SERVICE_CONTEXT"),
+)
 
-// configure grit requester
-const ms = new GritRequester({
-  baseUrl: 'http://localhost:8001',
-  token: process.env.SERVICE_TOKEN || '',
-  secret: process.env.SERVICE_SECRET || '',
-  context: process.env.SERVICE_CONTEXT || '',
-});
+ms = GritService(config)
 
-// make a request from domain
-const resultFile = await ms.domain<IUser>('user').add({
-  name: 'example',
-  email: 'example@example.com'
-});
+# make a request from domain
+users = ms.domain("user").list_all(
+  filters=[{ "field": "name", "type": "eql", "value": "Admin" }]
+)
+
+# you can save the domain context to reuse
+user_ms = ms.domain("user")
+
+user = user_ms.detail(users[0]["id"])
 
 ```
 ---
-
-## 🧪 Testing
-
-Run tests:
-
-```bash
-npm run test
-```
-
-Run test coverage
-```bash
-npm run coverage:
-```
-
-Visualize unit coverage:
-
-```bash
-open ./coverage/unit/lcov-report/index.html
-```
-
-Visualize feature coverage:
-
-```bash
-open ./coverage/feature/lcov-report/index.html
-```
 
 ## 🔧 License
 
