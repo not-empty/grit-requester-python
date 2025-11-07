@@ -100,17 +100,14 @@ class GritService:
         json: Optional[dict] = None,
         **kwargs,
     ) -> requests.Response:
-        # if not self.is_token_valid():
-        #     self.auth()
+        if not self.is_token_valid():
+            self.auth()
 
         full_url = f"{self.base_url}/{url.lstrip('/')}"
 
-        print('teste 1')
         response = self.session.request(
             method, full_url, params=params, json=json, **kwargs
         )
-        print('teste 2')
-
 
         response.raise_for_status()
         return response
