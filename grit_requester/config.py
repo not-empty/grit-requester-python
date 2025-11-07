@@ -6,8 +6,8 @@ class GritConfig:
       token: str,
       secret: str,
       context: str,
-      token_header: str = "x-refreshed-token",
-      token_expiration_header: str = "x-refreshed-token-valid-until"
+      token_header: str = "x-token",
+      token_expiration_header: str = "x-expires"
     ):
         self.base_url = base_url
         self.auth_url = auth_url
