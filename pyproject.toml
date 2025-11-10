@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "grit_requester"
-version = "1.0.1"
+version = "1.0.2"
 description = "Grit requester client for Python"
 authors = [
   { name="Not Empty Foundation", email="dev@not-empty.org" },
