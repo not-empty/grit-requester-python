@@ -122,7 +122,6 @@ class GritDomain:
     def edit(self, id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         resp = self.api.patch(self._url(f"edit/{id}"), json=data)
         resp.raise_for_status()
-        return resp.json()
 
     def delete(self, id: str):
         resp = self.api.delete(self._url(f"delete/{id}"))
