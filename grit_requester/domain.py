@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from .query import prepare_grit_query
+from .query import prepare_grit_query, prepare_grit_fields
 
 class GritDomain:
     def __init__(self, service, path: str):
@@ -10,9 +10,11 @@ class GritDomain:
     def _url(self, endpoint: str = "") -> str:
         return f"{self.base_url}/{self.path}/{endpoint}".rstrip("/")
 
-    def detail(self, id: str) -> Optional[Dict[str, Any]]:
+    def detail(self, id: str, fields: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
         try:
-            resp = self.api.get(self._url(f"detail/{id}"))
+            query = "&".join(prepare_grit_fields(fields))
+            url = f"{self._url(f'detail/{id}')}?{query}" if query else self._url(f"detail/{id}")
+            resp = self.api.get(url)
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -20,9 +22,11 @@ class GritDomain:
                 return None
             raise
 
-    def dead_detail(self, id: str) -> Optional[Dict[str, Any]]:
+    def dead_detail(self, id: str, fields: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
         try:
-            resp = self.api.get(self._url(f"dead_detail/{id}"))
+            query = "&".join(prepare_grit_fields(fields))
+            url = f"{self._url(f'dead_detail/{id}')}?{query}" if query else self._url(f"dead_detail/{id}")
+            resp = self.api.get(url)
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
