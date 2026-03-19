@@ -16,6 +16,11 @@ def prepare_grit_order(order: Optional[Dict[str, str]]) -> List[str]:
         f"order={order['type']}"
     ]
 
+def prepare_grit_fields(fields: Optional[List[str]]) -> List[str]:
+    if not fields:
+        return []
+    return [f"fields={','.join(fields)}"]
+
 def prepare_grit_query(payload: Optional[Dict[str, Any]]) -> str:
     if not payload:
         return ""
@@ -24,6 +29,7 @@ def prepare_grit_query(payload: Optional[Dict[str, Any]]) -> str:
 
     query.extend(prepare_grit_filter(payload.get("filters")))
     query.extend(prepare_grit_order(payload.get("order")))
+    query.extend(prepare_grit_fields(payload.get("fields")))
 
     cursor = payload.get("cursor")
     if cursor:
