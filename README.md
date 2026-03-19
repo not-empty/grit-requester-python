@@ -89,6 +89,17 @@ user_ms = ms.domain("user")
 user = user_ms.detail(users[0]["id"])
 
 ```
+### Field selection and ordering
+
+`list`, `dead_list`, `list_all`, and `list_one` accept `fields` and `order` to control which columns are returned and how results are sorted.
+
+```python
+users = ms.domain("user").list(
+  fields=["id", "name", "created_at"],
+  order={"field": "name", "type": "asc"},
+)
+# → GET /user/list?order_by=name&order=asc&fields=id,name,created_at
+```
 ---
 
 ## 🔧 License

@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from .query import prepare_grit_query
+from .query import prepare_grit_query, prepare_grit_fields
 
 class GritDomain:
     def __init__(self, service, path: str):
@@ -10,9 +10,11 @@ class GritDomain:
     def _url(self, endpoint: str = "") -> str:
         return f"{self.base_url}/{self.path}/{endpoint}".rstrip("/")
 
-    def detail(self, id: str) -> Optional[Dict[str, Any]]:
+    def detail(self, id: str, fields: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
         try:
-            resp = self.api.get(self._url(f"detail/{id}"))
+            query = "&".join(prepare_grit_fields(fields))
+            url = f"{self._url(f'detail/{id}')}?{query}" if query else self._url(f"detail/{id}")
+            resp = self.api.get(url)
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -20,9 +22,11 @@ class GritDomain:
                 return None
             raise
 
-    def dead_detail(self, id: str) -> Optional[Dict[str, Any]]:
+    def dead_detail(self, id: str, fields: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
         try:
-            resp = self.api.get(self._url(f"detail/{id}"))
+            query = "&".join(prepare_grit_fields(fields))
+            url = f"{self._url(f'dead_detail/{id}')}?{query}" if query else self._url(f"dead_detail/{id}")
+            resp = self.api.get(url)
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -32,12 +36,14 @@ class GritDomain:
 
     def list(self, filters: Optional[List[Dict[str, Any]]] = None,
             order: Optional[Dict[str, str]] = None,
-            cursor: Optional[str] = None) -> Dict[str, Any]:
+            cursor: Optional[str] = None,
+            fields: Optional[List[str]] = None) -> Dict[str, Any]:
 
         query = prepare_grit_query({
             "filters": filters,
             "order": order,
-            "cursor": cursor
+            "cursor": cursor,
+            "fields": fields,
         })
 
         url = f"{self._url('list')}?{query}" if query else self._url('list')
@@ -51,12 +57,14 @@ class GritDomain:
 
     def dead_list(self, filters: Optional[List[Dict[str, Any]]] = None,
             order: Optional[Dict[str, str]] = None,
-            cursor: Optional[str] = None) -> Dict[str, Any]:
+            cursor: Optional[str] = None,
+            fields: Optional[List[str]] = None) -> Dict[str, Any]:
 
         query = prepare_grit_query({
             "filters": filters,
             "order": order,
-            "cursor": cursor
+            "cursor": cursor,
+            "fields": fields,
         })
 
         url = f"{self._url('dead_list')}?{query}" if query else self._url('list')
@@ -69,12 +77,13 @@ class GritDomain:
         }
 
     def list_all(self, filters: Optional[List[Dict[str, Any]]] = None,
-                 order: Optional[str] = None) -> List[Dict[str, Any]]:
+                 order: Optional[str] = None,
+                 fields: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         data = []
         cursor = None
 
         while True:
-            result = self.list(filters=filters, order=order, cursor=cursor)
+            result = self.list(filters=filters, order=order, cursor=cursor, fields=fields)
             data.extend(result["data"])
 
             if not result["cursor"] or cursor == result["cursor"]:
@@ -85,10 +94,12 @@ class GritDomain:
         return data
 
     def list_one(self, filters: Optional[List[Dict[str, Any]]] = None,
-                order: Optional[Dict[str, str]] = None) -> Optional[Dict[str, Any]]:
+                order: Optional[Dict[str, str]] = None,
+                fields: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
         query = prepare_grit_query({
             "filters": filters,
-            "order": order
+            "order": order,
+            "fields": fields,
         })
         url = f"{self._url('list_one')}?{query}"
         resp = self.api.get(url)
